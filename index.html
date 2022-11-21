@@ -20,6 +20,9 @@ const config = {
         height: 600,
         physics: {
         default: 'arcade',
+        arcade: {
+            gravity: 0
+            }
         },
         scene: {
             preload: preload,
@@ -71,11 +74,9 @@ const config = {
 
         const layer = this.add.rectangle(400, 300, 800, 2000, 0x99d9ea, 0.5);
 
-        const pads = this.physics.add.group({
-            key: ['pad1', 'pad2', 'pad3', 'pad4'],
-            repeat: 2,
-            setXY: {x:100, y:200, stepX: 60}
-        });
+        const pads = this.physics.add.staticGroup([{key: ['pad1', 'pad2', 'pad3', 'pad4'], repeat: 8, setXY: {x: 100, y: 300, stepX: 75 }},
+            {key: ['pad1', 'pad2', 'pad3', 'pad4'], repeat: 8, setXY: {x: 100, y: 300 - 60, stepX: 75 }}]);
+
 
         this.add.image(200, 250, 'land1');
         this.add.image(200, -250, 'land1');
