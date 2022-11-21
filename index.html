@@ -14,27 +14,33 @@
 <body>
 
 <script type="text/javascript">
-     
-     var config = {
+const config = {
         type: Phaser.AUTO,
         width: 800,
         height: 600,
+        physics: {
+        default: 'arcade',
+        },
         scene: {
             preload: preload,
             create: create,
             update: update
         }
-     };
-
-     var game = new Phaser.Game(config);
+    };
+    var keys;
+    const game = new Phaser.Game(config);
 
      function preload () {
-        this.load.image('pond', 'assets/png/pond.png');
-        this.load.spritesheet('koiboi', 'assets/png/koi-sprite.png', {frameWidth: 600, frameHeight: 600})
+        this.load.image('pond', 'assets/png/pond_bottom.png');
+        this.load.spritesheet('koiboi', 'assets/png/koi_sprite.png', {frameWidth: 150, frameHeight: 150})
+        this.load.image('land', 'assets/png/pondedge.png');
      }
 
      function create () {
-        this.add.image(400, 300, 'pond');
+
+        const pondbottom = this.add.image(400, 100, 'pond');
+        pondbottom.setScale(2);
+
         this.anims.create({
             key: 'swim',
             frames: this.anims.generateFrameNumbers('koiboi', { frames: [ 0, 1, 2, 3, 4, 5, 6, 7 ] }),
@@ -42,15 +48,38 @@
             repeat: -1
         });
 
-        const cody = this.add.sprite(600, 370);
-        cody.setScale(0.5);
-        cody.play('swim');
+        keys = this.input.keyboard.createCursorKeys();
 
+        this.player = this.physics.add.sprite(400, 450, 'koiboi');
+
+        const layer = this.add.rectangle(400, 300, 800, 600, 0x99d9ea, 0.5);
+
+        const land = this.add.image(400, 100, 'land');
+        land.setScale(2);
      }
+
 
      function update () {
+        this.player.setVelocity(0);
 
-     }
+        if (keys.right.isDown) {
+            this.player.setVelocityX(300)
+            this.player.play('swim', true)
+        } else if (keys.left.isDown) {
+            this.player.setVelocityX(-300)
+            this.player.play('swim', true)
+        } else if (keys.up.isDown) {
+            this.player.setVelocityY(-300)
+            this.player.play('swim', true)
+        } else if (keys.down.isDown) {
+            this.player.setVelocityY(300)
+            this.player.play('swim', true)
+        } else {
+            this.player.stop()
+        }
+
+    }
+
 
 </script>
 </body>
