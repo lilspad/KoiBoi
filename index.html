@@ -28,18 +28,33 @@ const config = {
         }
     };
     var keys;
+    var camera;
     const game = new Phaser.Game(config);
 
      function preload () {
-        this.load.image('pond', 'assets/png/pond_bottom.png');
+        this.load.image('pond', 'assets/png/pondbottom.png');
         this.load.spritesheet('koiboi', 'assets/png/koi_sprite.png', {frameWidth: 150, frameHeight: 150})
-        this.load.image('land', 'assets/png/pondedge.png');
+        this.load.image('land1', 'assets/png/pondedgeleft.png');
+        this.load.image('land2', 'assets/png/pondedgeright.png');
+        this.load.image('pad1', 'assets/png/pad1.png');
+        this.load.image('pad2', 'assets/png/pad2.png');
+        this.load.image('pad3', 'assets/png/pad3.png');
+        this.load.image('pad4', 'assets/png/pad4.png')
      }
 
      function create () {
+        this.cameras.main.setBounds(0, -500, 400 * 2, 500 * 2);
+        this.physics.world.setBounds(0, -500, 400 * 2, 500 * 2);
 
-        const pondbottom = this.add.image(400, 100, 'pond');
+        /*const pondbottom = this.add.image(0, -400, 'pond');
         pondbottom.setScale(2);
+        pondbottom.setOrigin(0);*/
+
+        this.add.image(0, -500, 'pond').setFlipX(true).setOrigin(0);
+        this.add.image(400, -500, 'pond').setFlipX(true).setOrigin(0);
+        this.add.image(0, 0, 'pond').setOrigin(0);
+        this.add.image(400, 0, 'pond').setOrigin(0);
+        
 
         this.anims.create({
             key: 'swim',
@@ -51,11 +66,22 @@ const config = {
         keys = this.input.keyboard.createCursorKeys();
 
         this.player = this.physics.add.sprite(400, 450, 'koiboi');
+        this.player.body.collideWorldBounds = true;
+        this.cameras.main.startFollow(this.player, true);
 
-        const layer = this.add.rectangle(400, 300, 800, 600, 0x99d9ea, 0.5);
+        const layer = this.add.rectangle(400, 300, 800, 2000, 0x99d9ea, 0.5);
 
-        const land = this.add.image(400, 100, 'land');
-        land.setScale(2);
+        const pads = this.physics.add.group({
+            key: ['pad1', 'pad2', 'pad3', 'pad4'],
+            repeat: 2,
+            setXY: {x:100, y:200, stepX: 60}
+        });
+
+        this.add.image(200, 250, 'land1');
+        this.add.image(200, -250, 'land1');
+        this.add.image(600, 250, 'land2');
+        this.add.image(600, -250, 'land2');
+        
      }
 
 
@@ -75,7 +101,8 @@ const config = {
             this.player.setVelocityY(300)
             this.player.play('swim', true)
         } else {
-            this.player.stop()
+            this.player.stop();
+            this.player.setFrame(3)
         }
 
     }
