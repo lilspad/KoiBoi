@@ -12,7 +12,6 @@
     </style>
 </head>
 <body>
-
 <script type="text/javascript">
 const config = {
         type: Phaser.AUTO,
@@ -32,57 +31,126 @@ const config = {
     };
     var keys;
     var camera;
+    var koi;
+    var bugs;
     const game = new Phaser.Game(config);
 
      function preload () {
         this.load.image('pond', 'assets/png/pondbottom.png');
-        this.load.spritesheet('koiboi', 'assets/png/koi_sprite.png', {frameWidth: 150, frameHeight: 150})
+        this.load.spritesheet('koiboi', 'assets/png/thisis-spritefish.png',
+        {frameWidth: 87, frameHeight: 113});
         this.load.image('land1', 'assets/png/pondedgeleft.png');
         this.load.image('land2', 'assets/png/pondedgeright.png');
-        this.load.image('pad1', 'assets/png/pad1.png');
-        this.load.image('pad2', 'assets/png/pad2.png');
-        this.load.image('pad3', 'assets/png/pad3.png');
-        this.load.image('pad4', 'assets/png/pad4.png')
+        this.load.image('pad1', 'assets/png/pads/pad01.png');
+        this.load.image('pad2', 'assets/png/pads/pad02.png');
+        this.load.image('pad3', 'assets/png/pads/pad03.png');
+        this.load.image('pad4', 'assets/png/pads/pad04.png');
+        this.load.image('dragon', 'assets/png/bugs/dragonfly.png');
+        this.load.image('spidey', 'assets/png/bugs/waterspider.png');
+        this.load.image('fly', 'assets/png/bugs/fly.png');
+        this.load.image('worm', 'assets/png/bugs/worm.png')
      }
 
      function create () {
-        this.cameras.main.setBounds(0, -500, 400 * 2, 500 * 2);
-        this.physics.world.setBounds(0, -500, 400 * 2, 500 * 2);
 
-        /*const pondbottom = this.add.image(0, -400, 'pond');
-        pondbottom.setScale(2);
-        pondbottom.setOrigin(0);*/
+        //set up world bounds, camera and movement input
+        this.physics.world.setBounds(50, -500, 350 * 2, 500 * 2);
+        this.cameras.main.setBounds(0, -500, 350 * 2, 500 * 2);
+        keys = this.input.keyboard.createCursorKeys();
 
+        //add background image(s)
         this.add.image(0, -500, 'pond').setFlipX(true).setOrigin(0);
         this.add.image(400, -500, 'pond').setFlipX(true).setOrigin(0);
         this.add.image(0, 0, 'pond').setOrigin(0);
         this.add.image(400, 0, 'pond').setOrigin(0);
         
+        //add and set up sprite
+        this.player = this.physics.add.sprite(400, 425, 'koiboi');
+        koi = this.player;
+        koi.body.collideWorldBounds = true;
+        koi.body.setSize(43, 113)
 
+        this.cameras.main.startFollow(koi, true);
+        
         this.anims.create({
             key: 'swim',
-            frames: this.anims.generateFrameNumbers('koiboi', { frames: [ 0, 1, 2, 3, 4, 5, 6, 7 ] }),
+            frames: this.anims.generateFrameNumbers('koiboi', 
+            { frames: [ 0, 1, 2, 3, 4, 5, 6, 7 ] }),
             frameRate: 8,
             repeat: -1
         });
 
-        keys = this.input.keyboard.createCursorKeys();
+        //add a semi-transparent layer to mimic water surface
+        this.add.rectangle(400, 0, 800, 1000, 0x99d9ea, 0.5);
 
-        this.player = this.physics.add.sprite(400, 450, 'koiboi');
-        this.player.body.collideWorldBounds = true;
-        this.cameras.main.startFollow(this.player, true);
-
-        const layer = this.add.rectangle(400, 300, 800, 2000, 0x99d9ea, 0.5);
-
-        const pads = this.physics.add.staticGroup([{key: ['pad1', 'pad2', 'pad3', 'pad4'], repeat: 8, setXY: {x: 100, y: 300, stepX: 75 }},
-            {key: ['pad1', 'pad2', 'pad3', 'pad4'], repeat: 8, setXY: {x: 100, y: 300 - 60, stepX: 75 }}]);
-
-
+        //add ornamental edges (accounted for in world bounds)
         this.add.image(200, 250, 'land1');
         this.add.image(200, -250, 'land1');
         this.add.image(600, 250, 'land2');
         this.add.image(600, -250, 'land2');
+
+        //add collison elements at random points in rows,
+        /*function getx1 () {
+            for (var i = 0; i < 4; i++) {
+                var x = Phaser.Math.Between(100, 400);
+                return x;
+            }
+        };
+
+        function getx2 () {
+            for (var i = 0; i < 4; i++) {
+                var x = Phaser.Math.Between(425, 700);
+                return x;
+            }
+        };*/
+
+        /*const padRow1 = [this.physics.add.image(getx1(), 250, 'pad1').setImmovable(true),
+        this.physics.add.image(getx2(), 250, 'pad3').setImmovable(true)];
+        const padRow2 = [this.physics.add.image(getx1(), 100, 'pad4').setImmovable(true),
+        this.physics.add.image(getx2(), 100, 'pad2').setImmovable(true)];
+
+        padRow1[0].body.setSize(12, 12);
+        padRow2[0].body.setSize(12, 12);*/
+
+        const pads = this.physics.add.group({
+            key: ['pad2', 'pad3', 'pad4'],
+            frameQuantity: 1,
+            immovable: true
+            });
         
+        Phaser.Actions.PlaceOnRectangle(
+            pads.getChildren(), 
+            new Phaser.Geom.Rectangle(100, -400, 600, 600)
+        );
+
+        this.physics.add.collider(koi, pads);
+
+        //add collectable elements
+        bugsGroup = this.physics.add.staticGroup({
+            key: ['dragon', 'spidey', 'fly'],
+            frameQuantity: 4,
+            immovable: true
+        });
+
+        const bugs = bugsGroup.getChildren();
+
+        for (var i = 0; i < bugs.length; i++)
+        {
+            var x = Phaser.Math.Between(100, 700);
+            var y = Phaser.Math.Between(300, -500);
+
+            bugs[i].setPosition(x, y);
+        }
+
+        bugsGroup.refresh();
+
+        this.physics.add.overlap(koi, bugsGroup, bugHit);
+        
+     }
+
+     function bugHit (koi, bug) {
+        bugsGroup.killAndHide(bug);
+        bug.body.enable = false;
      }
 
 
