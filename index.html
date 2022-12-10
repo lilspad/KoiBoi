@@ -40,8 +40,9 @@ const config = {
 
      function preload () {
         this.load.image('pond', 'assets/png/pondbottom.png');
-        this.load.spritesheet('koiboi', 'assets/png/thisis-spritefish.png',
-        {frameWidth: 87, frameHeight: 113});
+        this.load.spritesheet('koiboi', 'assets/png/spritesheet.png',
+        /*{frameWidth: 87, frameHeight: 113}*/ 
+        {frameWidth: 113, frameHeight: 87});
         this.load.image('land1', 'assets/png/pondedgeleft.png');
         this.load.image('land2', 'assets/png/pondedgeright.png');
         this.load.image('pad1', 'assets/png/pads/pad01.png');
@@ -70,10 +71,12 @@ const config = {
         //add and set up sprite
         this.player = this.physics.add.sprite(400, 450, 'koiboi');
         koi = this.player;
+        koi.angle = -90;
+        koi.body.setSize(35, 108).setOffset(14, -5);
+        koi.setScale(0.75);
+        koi.anchor = 0.5, 0.5;
         koi.body.collideWorldBounds = true;
-        koi.body.setSize(43, 108);
-        koi.body.setOffset(14, -5);
-
+        
         this.cameras.main.startFollow(koi, true);
         
         this.anims.create({
@@ -85,7 +88,7 @@ const config = {
         });
 
         //add a semi-transparent layer to mimic water surface
-        this.add.rectangle(400, 0, 800, 1000, 0x99d9ea, 0.5);
+        this.add.rectangle(400, 0, 800, 1000, 0x99d9ea, 0.4);
 
         //add ornamental edges (accounted for in world bounds)
         this.add.image(200, 250, 'land1');
@@ -112,7 +115,7 @@ const config = {
 
         for (var i = 0; i < pads.length; i++) {
             var x = Phaser.Math.Between(100, 700);
-            var y = Phaser.Math.Between(300, -400);
+            var y = Phaser.Math.Between(300, -350);
 
             pads[i].setPosition(x, y).setSize(30,30);
             
@@ -152,7 +155,10 @@ const config = {
 
         this.physics.add.overlap(koi, bugsGroup, bugHit);
         bugsCount = bugs.length;
-        bugsText = this.add.text(100, 20, 'Bugs left: ' + bugsCount);
+        bugsText = this.add.text(100, 20, 'Bugs left: ' + bugsCount, {
+            font: 'bold 32px Courier',
+            fill: '#FFFFFF',
+        });
         bugsText.scrollFactorX = 0
         bugsText.scrollFactorY = 0
      }
@@ -165,25 +171,28 @@ const config = {
 
 
     function update () {
-        this.player.setVelocity(0);
         bugsText.setText('Bugs left: ' + bugsCount);
 
+        koi.setVelocity(0);
+        koi.setAngularVelocity(0);
+
         if (keys.right.isDown) {
-            this.player.setVelocityX(300)
-            this.player.play('swim', true)
+            koi.setAngularVelocity(200)
+            koi.play('swim', true)
         } else if (keys.left.isDown) {
-            this.player.setVelocityX(-300)
-            this.player.play('swim', true)
+            koi.setAngularVelocity(-200)
+            koi.play('swim', true)
         } else if (keys.up.isDown) {
-            this.player.setVelocityY(-300)
-            this.player.play('swim', true)
-        } else if (keys.down.isDown) {
-            this.player.setVelocityY(300)
-            this.player.play('swim', true)
+            this.physics.velocityFromAngle(koi.angle, 300, koi.body.velocity);
+            koi.play('swim', true)
+        } else if(keys.down.isDown) {
+            this.physics.velocityFromAngle(koi.angle, -300, koi.body.velocity);
+            koi.play('swim', true)
         } else {
-            this.player.stop();
-            this.player.setFrame(3)
+            koi.stop();
+            koi.setFrame(3)
         }
+
 
     }
 
