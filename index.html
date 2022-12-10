@@ -32,7 +32,10 @@ const config = {
     var keys;
     var camera;
     var koi;
+    var padGroup;
     var bugs;
+    var bugsText;
+    var bugsCount = 0;
     const game = new Phaser.Game(config);
 
      function preload () {
@@ -65,10 +68,11 @@ const config = {
         this.add.image(400, 0, 'pond').setOrigin(0);
         
         //add and set up sprite
-        this.player = this.physics.add.sprite(400, 425, 'koiboi');
+        this.player = this.physics.add.sprite(400, 450, 'koiboi');
         koi = this.player;
         koi.body.collideWorldBounds = true;
-        koi.body.setSize(43, 113)
+        koi.body.setSize(43, 108);
+        koi.body.setOffset(14, -5);
 
         this.cameras.main.startFollow(koi, true);
         
@@ -90,40 +94,42 @@ const config = {
         this.add.image(600, -250, 'land2');
 
         //add collison elements at random points in rows,
-        /*function getx1 () {
-            for (var i = 0; i < 4; i++) {
-                var x = Phaser.Math.Between(100, 400);
+
+        function getX () {
+            for (var i = 0; i < 10; i++) {
+                var x = Phaser.Math.Between(100, 700);
                 return x;
             }
         };
 
-        function getx2 () {
-            for (var i = 0; i < 4; i++) {
-                var x = Phaser.Math.Between(425, 700);
-                return x;
-            }
-        };*/
-
-        /*const padRow1 = [this.physics.add.image(getx1(), 250, 'pad1').setImmovable(true),
-        this.physics.add.image(getx2(), 250, 'pad3').setImmovable(true)];
-        const padRow2 = [this.physics.add.image(getx1(), 100, 'pad4').setImmovable(true),
-        this.physics.add.image(getx2(), 100, 'pad2').setImmovable(true)];
-
-        padRow1[0].body.setSize(12, 12);
-        padRow2[0].body.setSize(12, 12);*/
-
-        const pads = this.physics.add.group({
-            key: ['pad2', 'pad3', 'pad4'],
-            frameQuantity: 1,
+        padGroup = this.physics.add.staticGroup({
+            key: ['pad1', 'pad2', 'pad3', 'pad4'],
+            frameQuantity: 10,
             immovable: true
-            });
-        
-        Phaser.Actions.PlaceOnRectangle(
-            pads.getChildren(), 
-            new Phaser.Geom.Rectangle(100, -400, 600, 600)
-        );
+        });
 
-        this.physics.add.collider(koi, pads);
+        var pads = padGroup.getChildren();
+
+        for (var i = 0; i < pads.length; i++) {
+            var x = Phaser.Math.Between(100, 700);
+            var y = Phaser.Math.Between(300, -400);
+
+            pads[i].setPosition(x, y).setSize(30,30);
+            
+        }
+
+        padGroup.refresh();
+
+        this.physics.add.collider(koi, padGroup)
+        /*pads.create(getX(), 300, 'pad1');
+        pads.create(getX(), 300, 'pad2');
+        pads.create(getX(), 300, 'pad3');
+        pads.create(getX(), 300, 'pad4');
+        pads.create(getX(), 225, 'pad1');
+        pads.create(getX(), 225, 'pad2');
+        pads.create(getX(), 225, 'pad3');
+        pads.create(getX(), 225, 'pad4');*/
+
 
         //add collectable elements
         bugsGroup = this.physics.add.staticGroup({
@@ -137,7 +143,7 @@ const config = {
         for (var i = 0; i < bugs.length; i++)
         {
             var x = Phaser.Math.Between(100, 700);
-            var y = Phaser.Math.Between(300, -500);
+            var y = Phaser.Math.Between(350, -500);
 
             bugs[i].setPosition(x, y);
         }
@@ -145,17 +151,19 @@ const config = {
         bugsGroup.refresh();
 
         this.physics.add.overlap(koi, bugsGroup, bugHit);
-        
+       
      }
 
-     function bugHit (koi, bug) {
+    function bugHit (koi, bug) {
         bugsGroup.killAndHide(bug);
         bug.body.enable = false;
+        bugsCount -= 1;
      }
 
 
-     function update () {
+    function update () {
         this.player.setVelocity(0);
+        bugsText.setText('Bugs left: ' + bugsCount);
 
         if (keys.right.isDown) {
             this.player.setVelocityX(300)
