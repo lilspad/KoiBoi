@@ -69,15 +69,14 @@ const config = {
         this.add.image(400, 0, 'pond').setOrigin(0);
         
         //add and set up sprite
-        this.player = this.physics.add.sprite(400, 450, 'koiboi');
+        this.player = this.physics.add.sprite(400, 430, 'koiboi');
         koi = this.player;
         koi.angle = -90;
-        //koi.body.setSize(40, 113).setOffset(0, 0);
         koi.body.enable = true;
-        koi.body.setCircle(true);
+        koi.body.setCircle(52, 45, 8);
         //koi.setScale(1);
         koi.body.collideWorldBounds = true;
-        koi.anchor = 0.1, 0.1;
+        koi.anchor = 0.5, 0.5;
         
         this.cameras.main.startFollow(koi, true);
         
@@ -98,14 +97,36 @@ const config = {
         this.add.image(600, 250, 'land2');
         this.add.image(600, -250, 'land2');
 
-        //add collison elements at random points in rows,
+        //add collectable elements
 
-        function getX () {
-            for (var i = 0; i < 10; i++) {
-                var x = Phaser.Math.Between(100, 700);
-                return x;
-            }
-        };
+        bugsGroup = this.physics.add.staticGroup({
+            key: ['dragon', 'spidey', 'fly'],
+            frameQuantity: 4,
+            immovable: true
+        });
+
+        const bugs = bugsGroup.getChildren();
+
+        for (var i = 0; i < bugs.length; i++)
+        {
+            var x = Phaser.Math.Between(100, 700);
+            var y = Phaser.Math.Between(350, -500);
+
+            bugs[i].setPosition(x, y);
+        }
+
+        bugsGroup.refresh();
+
+        this.physics.add.collider(koi, bugsGroup, bugHit);
+        bugsCount = bugs.length;
+        bugsText = this.add.text(100, 20, 'Bugs left: ' + bugsCount, {
+            font: 'bold 32px Courier',
+            fill: '#FFFFFF',
+        });
+        bugsText.scrollFactorX = 0;
+        bugsText.scrollFactorY = 0;
+
+        //add collison elements at random points in rows,
 
         padGroup = this.physics.add.staticGroup({
             key: ['pad1', 'pad2', 'pad3', 'pad4'],
@@ -119,7 +140,7 @@ const config = {
             var x = Phaser.Math.Between(100, 700);
             var y = Phaser.Math.Between(300, -350);
 
-            pads[i].setPosition(x, y);
+            pads[i].setPosition(x, y).body.setCircle(45);
             
         }
 
@@ -134,35 +155,6 @@ const config = {
         pads.create(getX(), 225, 'pad2');
         pads.create(getX(), 225, 'pad3');
         pads.create(getX(), 225, 'pad4');*/
-
-
-        //add collectable elements
-        bugsGroup = this.physics.add.staticGroup({
-            key: ['dragon', 'spidey', 'fly'],
-            frameQuantity: 4,
-            immovable: true
-        });
-
-        const bugs = bugsGroup.getChildren();
-
-        for (var i = 0; i < bugs.length; i++)
-        {
-            var x = Phaser.Math.Between(100, 700);
-            var y = Phaser.Math.Between(350, -500);
-
-            bugs[i].setPosition(x, y).setSize(20, 20);
-        }
-
-        bugsGroup.refresh();
-
-        this.physics.add.collider(koi, bugsGroup, bugHit);
-        bugsCount = bugs.length;
-        bugsText = this.add.text(100, 20, 'Bugs left: ' + bugsCount, {
-            font: 'bold 32px Courier',
-            fill: '#FFFFFF',
-        });
-        bugsText.scrollFactorX = 0;
-        bugsText.scrollFactorY = 0;
 
         //debugging
         graphics = this.add.graphics();
