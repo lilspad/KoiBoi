@@ -72,10 +72,12 @@ const config = {
         this.player = this.physics.add.sprite(400, 450, 'koiboi');
         koi = this.player;
         koi.angle = -90;
-        koi.body.setSize(35, 108).setOffset(14, -5);
-        koi.setScale(0.75);
-        koi.anchor = 0.5, 0.5;
+        //koi.body.setSize(40, 113).setOffset(0, 0);
+        koi.body.enable = true;
+        koi.body.setCircle(true);
+        //koi.setScale(1);
         koi.body.collideWorldBounds = true;
+        koi.anchor = 0.1, 0.1;
         
         this.cameras.main.startFollow(koi, true);
         
@@ -108,7 +110,7 @@ const config = {
         padGroup = this.physics.add.staticGroup({
             key: ['pad1', 'pad2', 'pad3', 'pad4'],
             frameQuantity: 10,
-            immovable: true
+            
         });
 
         var pads = padGroup.getChildren();
@@ -117,7 +119,7 @@ const config = {
             var x = Phaser.Math.Between(100, 700);
             var y = Phaser.Math.Between(300, -350);
 
-            pads[i].setPosition(x, y).setSize(30,30);
+            pads[i].setPosition(x, y);
             
         }
 
@@ -148,19 +150,23 @@ const config = {
             var x = Phaser.Math.Between(100, 700);
             var y = Phaser.Math.Between(350, -500);
 
-            bugs[i].setPosition(x, y);
+            bugs[i].setPosition(x, y).setSize(20, 20);
         }
 
         bugsGroup.refresh();
 
-        this.physics.add.overlap(koi, bugsGroup, bugHit);
+        this.physics.add.collider(koi, bugsGroup, bugHit);
         bugsCount = bugs.length;
         bugsText = this.add.text(100, 20, 'Bugs left: ' + bugsCount, {
             font: 'bold 32px Courier',
             fill: '#FFFFFF',
         });
-        bugsText.scrollFactorX = 0
-        bugsText.scrollFactorY = 0
+        bugsText.scrollFactorX = 0;
+        bugsText.scrollFactorY = 0;
+
+        //debugging
+        graphics = this.add.graphics();
+        
      }
 
     function bugHit (koi, bug) {
@@ -168,7 +174,6 @@ const config = {
         bug.body.enable = false;
         bugsCount -= 1;
      }
-
 
     function update () {
         bugsText.setText('Bugs left: ' + bugsCount);
@@ -183,17 +188,43 @@ const config = {
             koi.setAngularVelocity(-200)
             koi.play('swim', true)
         } else if (keys.up.isDown) {
-            this.physics.velocityFromAngle(koi.angle, 300, koi.body.velocity);
+            this.physics.velocityFromAngle(koi.angle, 200, koi.body.velocity);
             koi.play('swim', true)
         } else if(keys.down.isDown) {
-            this.physics.velocityFromAngle(koi.angle, -300, koi.body.velocity);
+            this.physics.velocityFromAngle(koi.angle, -200, koi.body.velocity);
             koi.play('swim', true)
         } else {
             koi.stop();
             koi.setFrame(3)
         }
 
+        //debugging
+        var koiBounds = koi.getBounds();
+        var bugBounds = [];
+        bugsGroup.children.iterate((child) => {
+            var bounds = child.getBounds();
+            bugBounds.push(bounds);
+        })
+        var padBounds = [];
+        padGroup.children.iterate((child) => {
+            var bounds = child.getBounds();
+            padBounds.push(bounds);
+        })
 
+        graphics.clear();
+
+        graphics.lineStyle(1, 0xFF0000);
+        graphics.strokeRectShape(koiBounds);
+
+        for (var i = 0; i < bugBounds.length; i++) {
+            graphics.lineStyle(1, 0x0000FF);
+            graphics.strokeRectShape(bugBounds[i]);
+        }
+
+        for (var i = 0; i < padBounds.length; i++) {
+            graphics.lineStyle(1, 0x00FF00);
+            graphics.strokeRectShape(padBounds[i]);
+        }
     }
 
 
