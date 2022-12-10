@@ -151,7 +151,10 @@ const config = {
         bugsGroup.refresh();
 
         this.physics.add.overlap(koi, bugsGroup, bugHit);
-       
+        bugsCount = bugs.length;
+        bugsText = this.add.text(100, 20, 'Bugs left: ' + bugsCount);
+        bugsText.scrollFactorX = 0
+        bugsText.scrollFactorY = 0
      }
 
     function bugHit (koi, bug) {
