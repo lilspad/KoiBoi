@@ -7,11 +7,6 @@ const config = {
         arcade: {
             gravity: 0
             }
-        },
-        scene: {
-            preload: preload,
-            create: create,
-            update: update
         }
     };
     
@@ -22,9 +17,9 @@ const config = {
     var bugs;
     var bugsText;
     var bugsCount = 0;
-    const game = new Phaser.Game(config);
+    var gameScene = new Phaser.Scene("game");
 
-     function preload () {
+     gameScene.preload = function() {
         this.load.image('pond', 'assets/png/pondbottom.png');
         this.load.spritesheet('koiboi', 'assets/png/koi-spritesheet.png', 
         {frameWidth: 108, frameHeight: 58});
@@ -40,7 +35,7 @@ const config = {
         this.load.image('worm', 'assets/png/bugs/worm.png')
      }
 
-     function create () {
+     gameScene.create = function() {
 
         //set up world bounds, camera and movement input
         this.physics.world.setBounds(50, -500, 350 * 2, 500 * 2);
@@ -141,7 +136,7 @@ const config = {
         bugsCount -= 1;
      }
 
-    function update () {
+    gameScene.update = function() {
         bugsText.setText('Bugs left: ' + bugsCount);
 
         koi.setVelocity(0);
@@ -172,3 +167,4 @@ const config = {
 
         //debugging
     }
+
