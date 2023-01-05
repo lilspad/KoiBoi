@@ -73,7 +73,7 @@ const config = {
         koi = this.player;
         koi.angle = -90;
         koi.body.enable = true;
-        koi.body.setCircle(52, 45, 8);
+        koi.body.setSize(52, 30);
         //koi.setScale(1);
         koi.body.collideWorldBounds = true;
         koi.anchor = 0.5, 0.5;
@@ -128,7 +128,7 @@ const config = {
 
         //add collison elements at random points in rows,
 
-        padGroup = this.physics.add.staticGroup({
+        /*padGroup = this.physics.add.staticGroup({
             key: ['pad1', 'pad2', 'pad3', 'pad4'],
             frameQuantity: 10,
             
@@ -140,21 +140,13 @@ const config = {
             var x = Phaser.Math.Between(100, 700);
             var y = Phaser.Math.Between(300, -350);
 
-            pads[i].setPosition(x, y).body.setCircle(45);
+            pads[i].setPosition(x, y).body.setSize(30,30);
             
         }
 
         padGroup.refresh();
 
-        this.physics.add.collider(koi, padGroup)
-        /*pads.create(getX(), 300, 'pad1');
-        pads.create(getX(), 300, 'pad2');
-        pads.create(getX(), 300, 'pad3');
-        pads.create(getX(), 300, 'pad4');
-        pads.create(getX(), 225, 'pad1');
-        pads.create(getX(), 225, 'pad2');
-        pads.create(getX(), 225, 'pad3');
-        pads.create(getX(), 225, 'pad4');*/
+        this.physics.add.collider(koi, padGroup)*/
 
         //debugging
         graphics = this.add.graphics();
@@ -173,21 +165,37 @@ const config = {
         koi.setVelocity(0);
         koi.setAngularVelocity(0);
 
-        if (keys.right.isDown) {
-            koi.setAngularVelocity(200)
+        if (keys.up.isDown) {
+            koi.play('swim', true);
+
+            this.physics.velocityFromAngle(koi.angle, 200, koi.body.velocity);
+            
+                if (keys.right.isDown) {
+                koi.setAngularVelocity(150);
+                koi.play('swim', true)
+            } else if (keys.left.isDown) {
+                koi.setAngularVelocity(-150);
+                koi.play('swim', true)
+            } 
+        } else if(keys.down.isDown) {
+            koi.play('swim', true);
+
+            this.physics.velocityFromAngle(koi.angle, -200, koi.body.velocity);
+            
+            if (keys.right.isDown) {
+                koi.setAngularVelocity(150);
+            } else if (keys.left.isDown) {
+                koi.setAngularVelocity(-150);
+            } 
+        } else if (keys.right.isDown) {
+            koi.setAngularVelocity(150);
             koi.play('swim', true)
         } else if (keys.left.isDown) {
-            koi.setAngularVelocity(-200)
-            koi.play('swim', true)
-        } else if (keys.up.isDown) {
-            this.physics.velocityFromAngle(koi.angle, 200, koi.body.velocity);
-            koi.play('swim', true)
-        } else if(keys.down.isDown) {
-            this.physics.velocityFromAngle(koi.angle, -200, koi.body.velocity);
+            koi.setAngularVelocity(-150);
             koi.play('swim', true)
         } else {
             koi.stop();
-            koi.setFrame(3)
+            koi.setFrame(4)
         }
 
         //debugging
@@ -197,11 +205,11 @@ const config = {
             var bounds = child.getBounds();
             bugBounds.push(bounds);
         })
-        var padBounds = [];
+        /*var padBounds = [];
         padGroup.children.iterate((child) => {
             var bounds = child.getBounds();
             padBounds.push(bounds);
-        })
+        })*/
 
         graphics.clear();
 
@@ -213,10 +221,10 @@ const config = {
             graphics.strokeRectShape(bugBounds[i]);
         }
 
-        for (var i = 0; i < padBounds.length; i++) {
+        /*for (var i = 0; i < padBounds.length; i++) {
             graphics.lineStyle(1, 0x00FF00);
             graphics.strokeRectShape(padBounds[i]);
-        }
+        }*/
     }
 
 
