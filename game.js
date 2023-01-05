@@ -1,54 +1,42 @@
-const config = {
-        type: Phaser.AUTO,
-        width: 800,
-        height: 600,
-        physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: 0
-            }
-        }
-    };
-    
-    var keys;
-    var camera;
-    var koi;
-    var padGroup;
-    var bugs;
-    var bugsText;
-    var bugsCount = 0;
-    var gameScene = new Phaser.Scene("game");
+var keys;
+var camera;
+var koi;
+var padGroup;
+var bugs;
+var bugsText;
+var bugsCount = 0;
+var gameScene = new Phaser.Scene("game");
 
-     gameScene.preload = function() {
-        this.load.image('pond', 'assets/png/pondbottom.png');
-        this.load.spritesheet('koiboi', 'assets/png/koi-spritesheet.png', 
+gameScene.preload = function() {
+    this.load.image('pond', 'assets/png/pondbottom.png');
+    this.load.spritesheet('koiboi', 'assets/png/koi-spritesheet.png', 
         {frameWidth: 108, frameHeight: 58});
-        this.load.image('land1', 'assets/png/pondedgeleft.png');
-        this.load.image('land2', 'assets/png/pondedgeright.png');
-        this.load.image('pad1', 'assets/png/pads/pad01.png');
-        this.load.image('pad2', 'assets/png/pads/pad02.png');
-        this.load.image('pad3', 'assets/png/pads/pad03.png');
-        this.load.image('pad4', 'assets/png/pads/pad04.png');
-        this.load.image('dragon', 'assets/png/bugs/dragonfly.png');
-        this.load.image('spidey', 'assets/png/bugs/waterspider.png');
-        this.load.image('fly', 'assets/png/bugs/fly.png');
-        this.load.image('worm', 'assets/png/bugs/worm.png')
-     }
+    this.load.image('land1', 'assets/png/pondedgeleft.png');
+    this.load.image('land2', 'assets/png/pondedgeright.png');
+    this.load.image('pad1', 'assets/png/pads/pad01.png');
+    this.load.image('pad2', 'assets/png/pads/pad02.png');
+    this.load.image('pad3', 'assets/png/pads/pad03.png');
+    this.load.image('pad4', 'assets/png/pads/pad04.png');
+    this.load.image('dragon', 'assets/png/bugs/dragonfly.png');
+    this.load.image('spidey', 'assets/png/bugs/waterspider.png');
+    this.load.image('fly', 'assets/png/bugs/fly.png');
+    this.load.image('worm', 'assets/png/bugs/worm.png')
+}
 
-     gameScene.create = function() {
+gameScene.create = function() {
 
-        //set up world bounds, camera and movement input
+    //set up world bounds, camera and movement input
         this.physics.world.setBounds(50, -500, 350 * 2, 500 * 2);
         this.cameras.main.setBounds(0, -500, 350 * 2, 500 * 2);
         keys = this.input.keyboard.createCursorKeys();
 
-        //add background image(s)
+    //add background image(s)
         this.add.image(0, -500, 'pond').setFlipX(true).setOrigin(0);
         this.add.image(400, -500, 'pond').setFlipX(true).setOrigin(0);
         this.add.image(0, 0, 'pond').setOrigin(0);
         this.add.image(400, 0, 'pond').setOrigin(0);
         
-        //add and set up sprite
+    //add and set up sprite
         this.player = this.physics.add.sprite(400, 430, 'koiboi');
         koi = this.player;
         koi.angle = -90;
@@ -68,16 +56,16 @@ const config = {
             repeat: -1
         });
 
-        //add a semi-transparent layer to mimic water surface
+    //add a semi-transparent layer to mimic water surface
         this.add.rectangle(400, 0, 800, 1000, 0x99d9ea, 0.4);
 
-        //add ornamental edges (accounted for in world bounds)
+    //add ornamental edges (accounted for in world bounds)
         this.add.image(200, 250, 'land1');
         this.add.image(200, -250, 'land1');
         this.add.image(600, 250, 'land2');
         this.add.image(600, -250, 'land2');
 
-        //add collison elements at random points in rows,
+    //add collison elements at random points in rows,
 
         padGroup = this.physics.add.staticGroup({
             key: ['pad1', 'pad2', 'pad3', 'pad4'],
@@ -99,7 +87,7 @@ const config = {
 
         this.physics.add.collider(koi, padGroup)
 
-        //add collectable elements
+    //add collectable elements
 
         bugsGroup = this.physics.add.staticGroup({
             key: ['dragon', 'spidey', 'fly'],
@@ -128,43 +116,43 @@ const config = {
         bugsText.scrollFactorX = 0;
         bugsText.scrollFactorY = 0;
         
-     }
+}
 
-    function bugHit (koi, bug) {
-        bugsGroup.killAndHide(bug);
-        bug.body.enable = false;
-        bugsCount -= 1;
-     }
+function bugHit (koi, bug) {
+    bugsGroup.killAndHide(bug);
+    bug.body.enable = false;
+    bugsCount -= 1;
+}
 
-    gameScene.update = function() {
-        bugsText.setText('Bugs left: ' + bugsCount);
+gameScene.update = function() {
+    bugsText.setText('Bugs left: ' + bugsCount);
 
-        koi.setVelocity(0);
-        koi.setAngularVelocity(0);
+    koi.setVelocity(0);
+    koi.setAngularVelocity(0);
 
-        if (keys.up.isDown) {
-            koi.play('swim', true);
+    if (keys.up.isDown) {
+        koi.play('swim', true);
 
-            this.physics.velocityFromAngle(koi.angle, 200, koi.body.velocity);
+        this.physics.velocityFromAngle(koi.angle, 200, koi.body.velocity);
             
-                if (keys.right.isDown) {
-                koi.setAngularVelocity(175);
-                koi.play('swim', true)
-            } else if (keys.left.isDown) {
-                koi.setAngularVelocity(-175);
-                koi.play('swim', true)
-            } 
-        } else if (keys.right.isDown) {
+        if (keys.right.isDown) {
             koi.setAngularVelocity(175);
             koi.play('swim', true)
         } else if (keys.left.isDown) {
             koi.setAngularVelocity(-175);
             koi.play('swim', true)
-        } else {
-            koi.stop();
-            koi.setFrame(4)
-        }
-
-        //debugging
+        } 
+    } else if (keys.right.isDown) {
+        koi.setAngularVelocity(175);
+        koi.play('swim', true)
+    } else if (keys.left.isDown) {
+        koi.setAngularVelocity(-175);
+        koi.play('swim', true)
+    } else {
+        koi.stop();
+        koi.setFrame(4)
     }
+
+    //debugging
+}
 
