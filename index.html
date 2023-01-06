@@ -13,8 +13,11 @@
 </head>
 <body>
 <script type="text/javascript" src="game.js"></script>
+<script type="text/javascript" src="title.js"></script>
+<script type="text/javascript" src="end.js"></script>
 <script type="text/javascript">
 const config = {
+        title: "KoiBoi",
         type: Phaser.AUTO,
         width: 800,
         height: 600,
@@ -23,11 +26,17 @@ const config = {
         arcade: {
             gravity: 0
             }
-        }
+        },
+        backgroundColor: "#99d9ea"
     };
 var game = new Phaser.Game(config);
-game.scene.add("game", gameScene);
-game.scene.start("game");
+
+game.scene.add('title', titleScene);
+game.scene.add('game', gameScene);
+game.scene.add('end', endScene);
+
+game.scene.start('title');
+
 </script>
 </body>
 </html>
@@ -36,10 +45,12 @@ game.scene.start("game");
 NOTES
 
 To do list
-- Start and end screen
+    done    - Start and end screen
+-Restart (end screen) and refresh (in game) buttons
 - Emitter animation when koi swims
 - Bounce for pads on collision
 - Animation for Bugs
 - Avoid overlap between pads and bugs
 - Shadows for all elements
+- Add a credit caption
 -->
