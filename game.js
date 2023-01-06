@@ -1,11 +1,14 @@
+var gameScene = new Phaser.Scene("game");
+
+var koi;
 var keys;
 var camera;
-var koi;
+
 var padGroup;
+
 var bugs;
 var bugsText;
-var bugsCount = 0;
-var gameScene = new Phaser.Scene("game");
+var bugsCount = 1;
 
 gameScene.preload = function() {
     this.load.image('pond', 'assets/png/pondbottom.png');
@@ -108,6 +111,7 @@ gameScene.create = function() {
         bugsGroup.refresh();
 
         this.physics.add.collider(koi, bugsGroup, bugHit);
+
         bugsCount = bugs.length;
         bugsText = this.add.text(100, 20, 'Bugs left: ' + bugsCount, {
             font: 'bold 32px Courier',
@@ -122,6 +126,15 @@ function bugHit (koi, bug) {
     bugsGroup.killAndHide(bug);
     bug.body.enable = false;
     bugsCount -= 1;
+}
+
+function gameOver () {
+    if (bugsCount === 0) {
+        return true;
+    }
+    while (bugsCount > 0) {
+        return false;
+    }
 }
 
 gameScene.update = function() {
@@ -153,6 +166,10 @@ gameScene.update = function() {
         koi.setFrame(4)
     }
 
+    if (gameOver()) {
+    game.scene.remove('game');
+    game.scene.start('end');
+    }
     //debugging
 }
 
