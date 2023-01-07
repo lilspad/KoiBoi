@@ -1,15 +1,20 @@
 var titleScene = new Phaser.Scene("title");
 
 titleScene.create = function() {
-    this.add.text(330, 180, "KoiBoi", {
+
+    this.add.text(400, 200, "KoiBoi", {
         font: "bold 32px courier"
-    });
-    this.add.text(220, 220, "Explore the pond and hunt some bugs.")
-    var start = this.add.text(350,320, "Start >");
+    }).setOrigin(0.5, 0.5);
+    
+    this.add.text(400, 250, "Explore the pond and hunt some bugs.")
+    .setOrigin(0.5, 0.5);
+
+    var start = this.add.text(400,300, "Start >");
     start.setStyle({
         color: "#000000",
         backgroundColor: '#FFFFFF'
         })
+        .setOrigin(0.5, 0.5)
     .setPadding(5)
     .setInteractive()
     .on('pointerdown', () => {

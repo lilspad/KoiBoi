@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <title>KoiBoi</title>
     <link rel="icon" href="favicon.png" />
-
+    <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
     <div id="game">
@@ -25,8 +25,12 @@
                         gravity: 0
                         }
                     },
-                    backgroundColor: "#99d9ea"
+                    backgroundColor: "#99d9ea",
+                    scale: {
+                        autoCenter: Phaser.Scale.CENTER_BOTH
+                    }
                 };
+
             var game = new Phaser.Game(config);
 
             game.scene.add('title', titleScene);
