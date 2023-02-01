@@ -1,1 +1,1 @@
-web: node KoiBoi/index.html
+web: node ./index.js
