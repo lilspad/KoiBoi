@@ -2,8 +2,10 @@ const cool = require('cool-ascii-faces');
 const express = require("express");
 const app = express();
 
-app.listen(3000, () => {
-  console.log("Application started and Listening on port 3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server is ready to listen on port ${PORT}`);
 });
 
 app.use(express.static(__dirname));
