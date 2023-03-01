@@ -1,9 +1,22 @@
-body {
+* {
+    font-family: 'Courier New', Courier, monospace;
     margin: 0;
-    height: 100vh;
-    width: 100vw;
+    padding: 0;
 }
 
 canvas {
     border: 1px solid black;
+}
+
+p {
+    width: 100%;
+    text-align: center;
+    padding-top: 50px;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
 }
